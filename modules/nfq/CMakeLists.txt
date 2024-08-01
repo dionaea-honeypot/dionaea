@@ -41,5 +41,5 @@ target_link_libraries(
 
 install(
   TARGETS module_nfq
-  LIBRARY DESTINATION lib/dionaea
+  LIBRARY DESTINATION ${DIONAEA_MODDIR}
 )

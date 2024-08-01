@@ -27,5 +27,5 @@ target_link_libraries (xmatch ${GMODULE2_LIBRARIES})
 
 install(
   TARGETS xmatch
-  LIBRARY DESTINATION lib
+  LIBRARY DESTINATION ${DIONAEA_MODDIR}
 )

@@ -5,33 +5,46 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-from distutils.core import setup
-from distutils.extension import Extension
-from distutils.util import convert_path
+from setuptools import setup, find_packages, Extension
+from setuptools.command.install import install as _install
+from setuptools.command.build_ext import build_ext as _build_ext
+
 import os
-from Cython.Distutils import build_ext
+# from Cython.Distutils import build_ext
+
+# Helper function to get absolute path relative to this file
+def get_abs_path(rel_path):
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), rel_path))
+
+def get_rel_path(abs_path):
+    return os.path.relpath(os.path.join(os.path.dirname(__file__), abs_path))
+
+# Function to process CMake-style paths
+def process_cmake_path(path):
+    if path.startswith('${CMAKE_CURRENT_SOURCE_DIR}'):
+        return get_rel_path(get_abs_path(path))
+    return path
+
+class CustomBuildExt(_build_ext):
+    def build_extensions(self):
+        if '-Wstrict-prototypes' in self.compiler.compiler_so:
+            self.compiler.compiler_so.remove('-Wstrict-prototypes')
+        super().build_extensions()
+
+class CustomInstall(_install):
+    def run(self):
+        _install.run(self)
 
 
-def find_packages(base_path):
-    base_path = convert_path(base_path)
-    found = []
-    for root, dirs, files in os.walk(base_path, followlinks=True):
-        dirs[:] = [d for d in dirs if d[0] != '.' and d not in ('ez_setup', '__pycache__')]
-        relpath = os.path.relpath(root, base_path)
-        parent = relpath.replace(os.sep, '.').lstrip('.')
-        if relpath != '.' and parent not in found:
-            continue
-        for dir in dirs:
-            if os.path.isfile(os.path.join(root, dir, '__init__.py')):
-                package = '.'.join((parent, dir)) if parent else dir
-                found.append(package)
-    return found
+print("=== DEBUG: CMAKE_CURRENT_SOURCE_DIR " + "${CMAKE_CURRENT_SOURCE_DIR}")
 
-core_cflags = '${GLIB2_CFLAGS};' # glib
-core_cflags += '${GMODULE2_CFLAGS}' # gmodule
+# glib
+core_cflags = '${GLIB2_CFLAGS};'
+core_ldflags = '${GLIB2_LDFLAGS};'
 
-core_ldflags = '${GLIB2_LDFLAGS};' # glib
-core_ldflags += '${GMODULE2_LDFLAGS}' # gmodule
+# gmodule
+core_cflags += '${GMODULE2_CFLAGS}'
+core_ldflags += '${GMODULE2_LDFLAGS}'
 
 core_include_dirs = set()
 core_extra_compile_flags = set()
@@ -39,7 +52,7 @@ for i in core_cflags.split(';'):
     if i == '':
         continue
     elif i.startswith('-I'):
-        core_include_dirs.add(i[2:])
+        core_include_dirs.add(process_cmake_path(i[2:]))
     else:
         core_extra_compile_flags.add(i)
 
@@ -53,15 +66,18 @@ for i in core_ldflags.split(';'):
     elif i.startswith('-l'):
         core_libraries.add(i[2:])
     elif i.startswith('-L'):
-        core_library_dirs.add(i[2:])
+        core_library_dirs.add(process_cmake_path(i[2:]))
     else:
         core_library_other_flags.add(i)
 
-ext_modules=[
+ext_modules = [
     Extension("dionaea.core",
         ['${CMAKE_CURRENT_SOURCE_DIR}/binding.pyx'],
         language="c",
-        include_dirs=['${CMAKE_CURRENT_SOURCE_DIR}/../../include', '${CMAKE_CURRENT_SOURCE_DIR}/../../'] + list(core_include_dirs),
+        include_dirs=[
+            process_cmake_path('${CMAKE_CURRENT_SOURCE_DIR}/../../include'),
+            process_cmake_path('${CMAKE_CURRENT_SOURCE_DIR}/../../')
+        ] + list(core_include_dirs),
         extra_compile_args=list(core_extra_compile_flags),
         libraries=list(core_libraries),
         library_dirs=list(core_library_dirs),
@@ -71,11 +87,20 @@ ext_modules=[
     ),
 ]
 
+d_packages = find_packages(process_cmake_path('${CMAKE_CURRENT_SOURCE_DIR}'))
+print("=== DEBUG: d_packages " + str(d_packages))
+
+d_dir = {'': process_cmake_path('${CMAKE_CURRENT_SOURCE_DIR}')}
+print("=== DEBUG: d_dir " + str(d_dir))
+
 setup(
-    name = 'dionaea',
+    name='dionaea',
     version="${DIONAEA_VERSION}",
-    cmdclass = {'build_ext': build_ext},
-    ext_modules = ext_modules,
-    packages=find_packages(base_path='${CMAKE_CURRENT_SOURCE_DIR}'),
-    package_dir={'': '${CMAKE_CURRENT_SOURCE_DIR}'}
+    cmdclass={
+        'build_ext': CustomBuildExt,
+        'install': CustomInstall,
+    },
+    ext_modules=ext_modules,
+    packages=d_packages,
+    package_dir=d_dir
 )

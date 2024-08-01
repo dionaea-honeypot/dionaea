@@ -28,9 +28,9 @@ class Address(object):
     b'"John Doe" <sip:john@example.org>'
     """
     _syntax = [
-        re.compile(b'^(?P<name>[a-zA-Z0-9\-\.\_\+\~\ \t]*)<(?P<uri>[^>]+)>( *; *(?P<params>.*))?'),
-        re.compile(b'^(?:"(?P<name>[a-zA-Z0-9\-\.\_\+\~\ \t]+)")[\ \t]*<(?P<uri>[^>]+)>( *; *(?P<params>.*))?'),
-        re.compile(b'^[\ \t]*(?P<name>)(?P<uri>[^;]+)( *; *(?P<params>.*))?')
+        re.compile(r'^(?P<name>[a-zA-Z0-9\-\.\_\+\~\ \t]*)<(?P<uri>[^>]+)>( *; *(?P<params>.*))?'),
+        re.compile(r'^(?:"(?P<name>[a-zA-Z0-9\-\.\_\+\~\ \t]+)")[\ \t]*<(?P<uri>[^>]+)>( *; *(?P<params>.*))?'),
+        re.compile(r'^[\ \t]*(?P<name>)(?P<uri>[^;]+)( *; *(?P<params>.*))?')
     ]
 
     def __init__(self, display_name = None, uri = None, must_quote = None, params = None):
@@ -128,12 +128,12 @@ class URI(object):
     True
     """
 
-    _syntax = re.compile(b"^(?P<scheme>[a-zA-Z][a-zA-Z0-9\+\-\.]*):"  # scheme
-        + b"(?:(?:(?P<user>[a-zA-Z0-9\-\_\.\!\~\*\'\(\)&=\+\$,;\?\/\%]+)" # user
-        + b"(?::(?P<password>[^:@;\?]+))?)@)?" # password
-        + b"(?:(?:(?P<host>[^;\?:]*)(?::(?P<port>[\d]+))?))"  # host, port
-        + b"(?:;(?P<params>[^\?]*))?" # parameters
-        + b"(?:\?(?P<headers>.*))?$" # headers
+    _syntax = re.compile(r"^(?P<scheme>[a-zA-Z][a-zA-Z0-9\+\-\.]*):"  # scheme
+        + r"(?:(?:(?P<user>[a-zA-Z0-9\-\_\.\!\~\*\'\(\)&=\+\$,;\?\/\%]+)" # user
+        + r"(?::(?P<password>[^:@;\?]+))?)@)?" # password
+        + r"(?:(?:(?P<host>[^;\?:]*)(?::(?P<port>[\d]+))?))"  # host, port
+        + r"(?:;(?P<params>[^\?]*))?" # parameters
+        + r"(?:\?(?P<headers>.*))?$" # headers
     )
 
     def __init__(self, scheme = None, user = None, password = None, host = None, port = None, params = None, headers = None):

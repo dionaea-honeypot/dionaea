@@ -18,7 +18,7 @@ class Command(object):
 
 class Decrement(Command):
     name = "decr"
-    regex_cmd = re.compile(b"^decr (?P<key>\w+) (?P<value>\d+)( (?P<noreply>noreply))?$")
+    regex_cmd = re.compile(r"^decr (?P<key>\w+) (?P<value>\d+)( (?P<noreply>noreply))?$")
 
     def __init__(self, key=None, value=0, no_reply=False):
         self.key = key
@@ -37,7 +37,7 @@ class Decrement(Command):
 
 class Delete(Command):
     name = "delete"
-    regex_cmd = re.compile(b"^(?P<command>\w+) (?P<key>\w+)( (?P<noreply>noreply))?$")
+    regex_cmd = re.compile(r"^(?P<command>\w+) (?P<key>\w+)( (?P<noreply>noreply))?$")
 
     def __init__(self, key=None, no_reply=None):
         self.key = key
@@ -73,7 +73,7 @@ class Get(Command):
 
 class Increment(Command):
     name = "incr"
-    regex_cmd = re.compile(b"^incr (?P<key>\w+) (?P<value>\d+)( (?P<noreply>noreply))?$")
+    regex_cmd = re.compile(r"^incr (?P<key>\w+) (?P<value>\d+)( (?P<noreply>noreply))?$")
 
     def __init__(self, key=None, value=0, no_reply=False):
         self.key = key
@@ -91,7 +91,7 @@ class Increment(Command):
 
 
 class StorageCommand(Command):
-    regex_cmd = re.compile(b"^(?P<command>\w+) (?P<key>\w+) (?P<flags>\d+) (?P<exptime>\d+) (?P<byte_count>\d+)( (?P<noreply>noreply))?")
+    regex_cmd = re.compile(r"^(?P<command>\w+) (?P<key>\w+) (?P<flags>\d+) (?P<exptime>\d+) (?P<byte_count>\d+)( (?P<noreply>noreply))?")
 
     def __init__(self, key=None, flags=None, exptime=None, byte_count=None, noreply=None):
         self.key = key
@@ -171,7 +171,7 @@ class Stats(Command):
 
 class Touch(Command):
     name = "touch"
-    regex_cmd = re.compile(b"^touch (?P<key>\w+) (?P<exptime>\d+)( (?P<noreply>noreply))?$")
+    regex_cmd = re.compile(r"^touch (?P<key>\w+) (?P<exptime>\d+)( (?P<noreply>noreply))?$")
 
     def __init__(self, key=None, exptime=None, no_reply=None):
         self.key = key

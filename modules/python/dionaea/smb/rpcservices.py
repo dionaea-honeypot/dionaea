@@ -2802,7 +2802,7 @@ class spoolss(RPCService):
 
         rpclog.debug("docname {} outputfile {}".format(DocName, OutputFile))
 
-        if OutputFile.startswith('\\') and OutputFile.endswith('\PIPE\ATSVC'):
+        if OutputFile.startswith('\\\\') and OutputFile.endswith('\\PIPE\\ATSVC'):
             # FIXME PIPE ATSVC COMMAND
             pass
         else:

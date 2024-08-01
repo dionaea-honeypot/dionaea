@@ -29,7 +29,7 @@ class cmdexe:
         else:
             self.send = self.void
         self.files = {}
-        self.cwd = 'C:\WINDOWS\System32'
+        self.cwd = 'C:\\WINDOWS\\System32'
 
 
     def handle_io_in(self, data):

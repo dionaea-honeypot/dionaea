@@ -261,7 +261,7 @@ class SipConfig(object):
         sdp = data[0]
         for n,v in media_ports.items():
             if v is None:
-                sdp = re.sub("\[" + n +"\].*\[\/" + n + "\]", "", sdp, 0, re.DOTALL)
+                sdp = re.sub("\\[" + n +"\\].*\\[\\/" + n + "\\]", "", sdp, 0, re.DOTALL)
             else:
                 params[n] = v
 

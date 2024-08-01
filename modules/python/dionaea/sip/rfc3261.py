@@ -678,7 +678,7 @@ class Via(object):
     b'z9hG4bK77asjd' b'192.0.2.207'
     """
 
-    _syntax = re.compile(b"SIP */ *2\.0 */ *(?P<protocol>[a-zA-Z]+) *(?P<address>[^ :;]*) *(:(?P<port>[0-9]+))?( *; *(?P<params>.*))?")
+    _syntax = re.compile(r"SIP */ *2\.0 */ *(?P<protocol>[a-zA-Z]+) *(?P<address>[^ :;]*) *(:(?P<port>[0-9]+))?( *; *(?P<params>.*))?")
 
     def __init__(self, protocol = None, address = None, port = None, params = None):
         if params is None:

@@ -12,17 +12,17 @@ function(install_if_not_exists src dest)
   get_filename_component(src_name "${src}" NAME)
   get_filename_component(basename_dest "${src}" NAME)
   install(CODE "
-    if(\${CMAKE_INSTALL_FULL_PREFIX} MATCHES .*/_CPack_Packages/.* OR NOT EXISTS \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${dest}/${src_name}\")
-      message(STATUS \"Installing: \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${dest}/${src_name}\")
+    if(\${CMAKE_INSTALL_FULL_PREFIX} MATCHES .*/_CPack_Packages/.* OR NOT EXISTS \"\$ENV{DESTDIR}/${dest}/${src_name}\")
+      message(STATUS \"Installing: \$ENV{DESTDIR}/${dest}/${src_name}\")
       execute_process(COMMAND \${CMAKE_COMMAND} -E copy \"${src}\"
-                      \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${dest}/${src_name}\"
+                      \"\$ENV{DESTDIR}/${dest}/${src_name}\"
                       RESULT_VARIABLE copy_result
                       ERROR_VARIABLE error_output)
       if(copy_result)
         message(FATAL_ERROR \${error_output})
       endif()
     else()
-      message(STATUS \"Skipping  : \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${dest}/${src_name}\")
+      message(STATUS \"Skipping  : \$ENV{DESTDIR}/${dest}/${src_name}\")
     endif()
   ")
 endfunction()

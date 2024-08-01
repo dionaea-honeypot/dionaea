@@ -43,13 +43,13 @@ function(install_enabled_python_config)
         if(NOT EXISTS "${_conf_dst}")
             install(DIRECTORY DESTINATION "${_conf_dst}")
             foreach(filename ${MY_FUNC_FILES})
-                install(CODE "message(STATUS \"Enabling Service: ${filename} in \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${_conf_dst}\")")
+                install(CODE "message(STATUS \"Enabling Service: ${filename} in \$ENV{DESTDIR}/${_conf_dst}\")")
                 install(CODE "
                 EXECUTE_PROCESS(
                     COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
                         ${MY_FUNC_SOURCE_REL_DIR}/${filename}
                         ${filename}
-                    WORKING_DIRECTORY \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${_conf_dst}\"
+                    WORKING_DIRECTORY \"\$ENV{DESTDIR}/${_conf_dst}\"
                 )
             ")
             endforeach()

@@ -9,11 +9,11 @@
 #ifndef HAVE_CONNECTION_H
 #define HAVE_CONNECTION_H
 
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <netinet/in.h>
 //#include <linux/if.h>
 #include <ev.h>
 #include <glib.h>

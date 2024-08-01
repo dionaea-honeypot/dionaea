@@ -59,7 +59,7 @@ target_link_libraries(
 
 install (
     TARGETS dionaea
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_SBINDIR}
 )
 
 configure_file(

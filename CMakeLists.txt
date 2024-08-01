@@ -31,7 +31,7 @@ project(
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 # ToDo: move to source file?
-list(APPEND CMAKE_C_FLAGS "-D_GNU_SOURCE")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -66,7 +66,27 @@ option(WITH_MODULE_PCAP "Build the pcap module" ON)
 
 option(RELEASE_BUILD "Remove Git revision from program version (use for stable releases)" OFF)
 
+# Default install prefix for Dionaea
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    message(STATUS "INFO: Setting the CMAKE_INSTALL_PREFIX to default - /opt/dionaea")
+    set_property(CACHE CMAKE_INSTALL_PREFIX PROPERTY VALUE "/opt/dionaea")
+endif()
+
+message(STATUS "Before GNUInstallDirs: CMAKE_INSTALL_FULL_LOCALSTATEDIR = ${CMAKE_INSTALL_FULL_LOCALSTATEDIR}")
 include(GNUInstallDirs)
+message(STATUS "After GNUInstallDirs: CMAKE_INSTALL_FULL_LOCALSTATEDIR = ${CMAKE_INSTALL_FULL_LOCALSTATEDIR}")
+
+### Dionaea non-FHS compliant defaults /opt/dionaea
+# Dionaea defaults are different from FHS as used in GNUInstallDirs
+# for example the default when prefix is set to /opt/dionaea, the configuration
+# is expected in /opt/dionaea/etc and not in /etc/opt/dionaea, same for the state dirs
+# expected to be in /opt/dionaea/var/lib and not in /var/opt/dionaea/lib
+if(CMAKE_INSTALL_PREFIX STREQUAL "/opt/dionaea")
+    set(CMAKE_INSTALL_FULL_SYSCONFDIR "${CMAKE_INSTALL_PREFIX}/etc" CACHE PATH "Configuration")
+    set(CMAKE_INSTALL_FULL_LOCALSTATEDIR "${CMAKE_INSTALL_PREFIX}/var" CACHE PATH "Modifiable single-machine data (var)" FORCE)
+    set(CMAKE_INSTALL_FULL_RUNSTATEDIR "${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/run" CACHE PATH "Run-time variable data (LOCALSTATEDIR/run)")
+endif()
+
 include(InstallConfig)
 include(Packaging)
 
@@ -90,12 +110,12 @@ endif()
 
 set(DIONAEA_USER "dionaea" CACHE STRING "Dionaea user")
 set(DIONAEA_GROUP "dionaea" CACHE STRING "Dionaea group")
-set(DIONAEA_MODDIR ${CMAKE_INSTALL_LIBDIR}/dionaea)
-set(DIONAEA_CONFDIR ${CMAKE_INSTALL_SYSCONFDIR}/dionaea)
-set(DIONAEA_RUNDIR "${CMAKE_INSTALL_LOCALSTATEDIR}/run" CACHE STRING "/run directory")
-set(DIONAEA_STATEDIR ${CMAKE_INSTALL_LOCALSTATEDIR}/lib/dionaea)
-set(DIONAEA_LOGDIR ${CMAKE_INSTALL_LOCALSTATEDIR}/log/dionaea)
-set(DIONAEA_PYTHON_SITELIBDIR ${CMAKE_INSTALL_LIBDIR}/dionaea/python)
+set(DIONAEA_MODDIR ${CMAKE_INSTALL_FULL_LIBDIR}/dionaea CACHE PATH "Dionaea directory for plugin modules")
+set(DIONAEA_CONFDIR ${CMAKE_INSTALL_FULL_SYSCONFDIR}/dionaea CACHE PATH "Dionaea configuration directory")
+set(DIONAEA_RUNDIR "${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/run" CACHE PATH "Dionaea /run directory")
+set(DIONAEA_STATEDIR ${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/lib/dionaea CACHE PATH "Dionaea directory for storing the status")
+set(DIONAEA_LOGDIR ${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/log/dionaea CACHE PATH "Dionaea log directory")
+set(DIONAEA_PYTHON_SITELIBDIR ${CMAKE_INSTALL_FULL_LIBDIR}/dionaea/python CACHE PATH "Dionaea location of python modules")
 
 ########### requirements ###############
 
